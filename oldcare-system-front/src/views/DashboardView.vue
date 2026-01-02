@@ -189,18 +189,21 @@ const weatherIcon = computed(() => {
 const fetchOngoingActivities = async () => {
   activitiesLoading.value = true
   try {
-    const now = new Date()
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    
     const response = await getAllActivities({ 
       status: 'published', 
-      size: 10 
+      size: 100 
     })
     const activities = response.records || response.data?.records || []
     
-    // 筛选正在进行的活动（活动日期在今天或之后，且状态为已发布）
+    // 筛选今天及以后的活动（活动日期>=今天0点，且状态为已发布）
     ongoingActivities.value = activities.filter(activity => {
       if (!activity.activityDate) return false
       const activityDate = new Date(activity.activityDate)
-      return activityDate >= now && activity.status === 'published'
+      // 活动日期在今天或以后
+      return activityDate >= today && activity.status === 'published'
     }).slice(0, 8) // 只显示前8个
   } catch (error) {
     console.error('获取活动失败:', error)

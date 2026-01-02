@@ -21,7 +21,7 @@
       <el-table-column prop="elderlyId" label="老人" width="150">
         <template #default="scope">{{ findName(scope.row.elderlyId) }}</template>
       </el-table-column>
-      <el-table-column prop="checkDate" label="检查时间" width="190" />
+      <el-table-column prop="checkDate" label="检查时间" width="190" :formatter="formatDateTime" />
       <el-table-column prop="checkType" label="检查类型" width="120" />
       <el-table-column prop="checkResult" label="检查结果" width="150" />
       <el-table-column prop="normalStatus" label="是否正常" width="120">
@@ -131,6 +131,14 @@ function formatStatus(status) {
     'abnormal': '异常'
   }
   return statusMap[status] || status
+}
+
+function formatDateTime(row, column, cellValue) {
+  const val = cellValue ?? column ?? row
+  if (val === null || val === undefined) return '-'
+  if (typeof val === 'string' && val.trim() === '') return '-'
+  const d = new Date(val)
+  return Number.isNaN(d.getTime()) ? '-' : d.toLocaleString('zh-CN')
 }
 
 function resetForm(row) {

@@ -22,10 +22,26 @@ export function getAllFeedback(params) {
 }
 
 /**
+ * 列表获取反馈（根据角色自动选择）
+ */
+export function listFeedback(params) {
+  // 这个函数会在组件中根据用户角色调用对应的 API
+  // 实际调用由前端组件决定
+  return http.get('/feedback', { params })
+}
+
+/**
  * 获取反馈详情
  */
 export function getFeedbackById(id) {
   return http.get(`/feedback/${id}`)
+}
+
+/**
+ * 删除反馈
+ */
+export function deleteFeedback(id) {
+  return http.delete(`/feedback/${id}`)
 }
 
 /**

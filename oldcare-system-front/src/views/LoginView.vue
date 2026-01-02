@@ -1,7 +1,7 @@
 <template>
   <div class="login-page">
     <div class="panel">
-      <h2 class="title">社区养老服务系统</h2>
+      <h2 class="title">智慧养老管理平台</h2>
       <el-form :model="form" :rules="rules" ref="formRef" label-position="top" @keyup.enter="onSubmit">
         <el-form-item label="用户名" prop="username">
           <el-input v-model="form.username" autocomplete="username" />

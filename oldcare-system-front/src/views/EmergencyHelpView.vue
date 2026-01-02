@@ -123,8 +123,6 @@
         </el-descriptions-item>
         <el-descriptions-item label="响应者">{{ viewData.responderName || '-' }}</el-descriptions-item>
         <el-descriptions-item label="响应时间">{{ formatTime({}, viewData.responseTime) }}</el-descriptions-item>
-        <el-descriptions-item label="响应备注">{{ viewData.responseNote || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="解决时间">{{ formatTime({}, viewData.resolvedTime) }}</el-descriptions-item>
         <el-descriptions-item label="发起时间">{{ formatTime({}, viewData.createdAt) }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
@@ -414,7 +412,12 @@ const getStatusColor = (status) => {
 }
 
 const formatTime = (row, column, cellValue) => {
-  return cellValue ? new Date(cellValue).toLocaleString('zh-CN') : '-'
+  // el-table 调用传 (row, column, cellValue)，描述卡片直接传值
+  const val = cellValue ?? column ?? row
+  if (val === null || val === undefined) return '-'
+  if (typeof val === 'string' && val.trim() === '') return '-'
+  const d = new Date(val)
+  return Number.isNaN(d.getTime()) ? '-' : d.toLocaleString('zh-CN')
 }
 
 fetchData()

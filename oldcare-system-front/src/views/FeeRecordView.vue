@@ -31,8 +31,8 @@
       <el-table-column prop="createdTime" label="创建时间" width="180" />
       <el-table-column label="操作" width="360">
         <template #default="scope">
-          <!-- 管理员可以审批确认支付 -->
-          <el-button size="small" text type="success" @click="pay(scope.row)" v-if="isAdmin && scope.row.status==='未支付'">标记支付</el-button>
+          <!-- 支付：管理员或本人，未支付/待支付可见 -->
+          <el-button size="small" text type="success" @click="pay(scope.row)" v-if="canPay(scope.row)">支付</el-button>
           <!-- 管理员可以审批退款申请 -->
           <el-button size="small" text type="success" @click="approveRefund(scope.row, true)" v-if="isAdmin && scope.row.status==='退款申请中'">同意退款</el-button>
           <el-button size="small" text type="danger" @click="approveRefund(scope.row, false)" v-if="isAdmin && scope.row.status==='退款申请中'">拒绝退款</el-button>
@@ -85,7 +85,7 @@
 import { onMounted, reactive, ref, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Plus, Edit, Delete } from '@element-plus/icons-vue'
-import { fetchFeeRecords, createFeeRecord, payFeeRecord, refundFeeRecord, approveRefund as approveRefundApi } from '../api/feeRecord'
+import { fetchFeeRecords, createFeeRecord, payFeeRecord, paySelfFeeRecord, refundFeeRecord, approveRefund as approveRefundApi } from '../api/feeRecord'
 import { fetchAllElderly } from '../api/elderly'
 import { fetchUsers } from '../api/user'
 import { useAuthStore } from '@/store/auth'
@@ -122,10 +122,27 @@ function statusType(status) {
   return ''
 }
 
+function isOwnRecord(row) {
+  const uid = currentUserId.value
+  if (!uid) return false
+  const uidStr = String(uid)
+  return [row.residentId, row.elderlyId, row.userId, row.user_id]
+    .filter((v) => v !== undefined && v !== null)
+    .some((v) => String(v) === uidStr)
+}
+
+function canPay(row) {
+  const status = (row.status || '').replace(/\s/g, '')
+  const isPending = status === '未支付' || status === '待支付'
+  if (!isPending) return false
+  if (isAdmin.value) return true
+  if (isResident.value && isOwnRecord(row)) return true
+  return false
+}
+
 function canRefund(row) {
   // 检查是否是当前用户的费用记录
-  // residentId 或 elderlyId 等于当前用户ID
-  return row.residentId === currentUserId.value || row.elderlyId === currentUserId.value
+  return isOwnRecord(row)
 }
 
 function findName(id) {
@@ -192,8 +209,9 @@ function submit() {
 
 async function pay(row) {
   try {
-    await payFeeRecord(row.id)
-    ElMessage.success('已标记为已支付')
+    const action = isAdmin.value ? payFeeRecord : paySelfFeeRecord
+    await action(row.id)
+    ElMessage.success('已支付')
     load()
   } catch (error) {
     ElMessage.error(error.message || '支付失败')

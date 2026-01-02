@@ -9,7 +9,7 @@
         <el-form-item label="选择身份" prop="role">
           <el-radio-group v-model="form.role">
             <el-radio value="resident">社区居民</el-radio>
-            <el-radio value="caregiver">社区护工</el-radio>
+            <el-radio value="caregiver">社区员工</el-radio>
           </el-radio-group>
         </el-form-item>
 

@@ -352,15 +352,26 @@ const getTypeColor = (type) => {
 }
 
 const formatDate = (row, column, cellValue) => {
-  return cellValue ? new Date(cellValue).toLocaleDateString('zh-CN') : '-'
+  const val = cellValue ?? column ?? row
+  if (val === null || val === undefined) return '-'
+  if (typeof val === 'string' && val.trim() === '') return '-'
+  const d = new Date(val)
+  return Number.isNaN(d.getTime()) ? '-' : d.toLocaleDateString('zh-CN')
 }
 
 const formatTime = (row, column, cellValue) => {
-  return cellValue ? new Date(cellValue).toLocaleString('zh-CN') : '-'
+  const val = cellValue ?? column ?? row
+  if (val === null || val === undefined) return '-'
+  if (typeof val === 'string' && val.trim() === '') return '-'
+  const d = new Date(val)
+  return Number.isNaN(d.getTime()) ? '-' : d.toLocaleString('zh-CN')
 }
 
 const displayDate = (value) => {
-  return value ? new Date(value).toLocaleDateString('zh-CN') : '-'
+  if (value === null || value === undefined) return '-'
+  if (typeof value === 'string' && value.trim() === '') return '-'
+  const d = new Date(value)
+  return Number.isNaN(d.getTime()) ? '-' : d.toLocaleDateString('zh-CN')
 }
 
 const formatDateForAPI = (date) => {

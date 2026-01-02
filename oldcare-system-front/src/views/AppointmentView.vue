@@ -10,6 +10,7 @@
         <el-option label="进行中" value="进行中" />
         <el-option label="已完成" value="已完成" />
         <el-option label="已取消" value="已取消" />
+        <el-option label="已退款" value="已退款" />
       </el-select>
       <el-button v-if="!isCaregiver" type="primary" :icon="Plus" @click="openForm()">新建预约</el-button>
     </div>
@@ -28,7 +29,7 @@
       <el-table-column prop="appointmentDate" label="预约时间" width="180" />
       <el-table-column prop="status" label="状态" width="110">
         <template #default="scope">
-          <el-tag :type="statusType(scope.row.status)">{{ scope.row.status }}</el-tag>
+          <el-tag :type="statusType(derivedStatus(scope.row))">{{ derivedStatus(scope.row) }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="totalAmount" label="费用" width="100" />
@@ -83,6 +84,7 @@
           <el-option label="进行中" value="进行中" />
           <el-option label="已完成" value="已完成" />
           <el-option label="已取消" value="已取消" />
+          <el-option label="已退款" value="已退款" />
         </el-select>
       </el-form-item>
       <el-form-item label="备注" prop="remark"><el-input v-model="form.remark" type="textarea" :rows="2" /></el-form-item>
@@ -99,6 +101,7 @@ import { onMounted, reactive, ref, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Plus, Edit, Delete } from '@element-plus/icons-vue'
 import appointmentApi from '@/api/appointment'
+import { fetchFeeRecords } from '@/api/feeRecord'
 import { fetchAllElderly } from '../api/elderly'
 import { fetchAllCaregivers } from '../api/caregiver'
 import { fetchAllServices } from '../api/service'
@@ -118,6 +121,7 @@ const isAdmin = computed(() => role.value === 'admin')
 const elderlyOptions = ref([])
 const caregiverOptions = ref([])
 const serviceOptions = ref([])
+const feeStatusMap = ref({}) // appointmentId -> fee status（已退款/退款申请中/已支付）
 
 const dialogVisible = ref(false)
 const formRef = ref()
@@ -164,9 +168,24 @@ function statusType(status) {
       return 'success'
     case '已取消':
       return 'danger'
+    case '已退款':
+      return 'info'
+    case '退款申请中':
+      return 'warning'
+    case '已支付':
+      return 'success'
+    case '未支付':
+    case '待支付':
+      return 'warning'
     default:
       return 'info'
   }
+}
+
+// 优先使用费用记录状态（已退款/退款申请中/已支付），否则回退预约本身状态
+function derivedStatus(row) {
+  const feeStatus = feeStatusMap.value[row.id]
+  return feeStatus || row.status
 }
 
 function findName(listData, id) {
@@ -213,6 +232,25 @@ async function load() {
     const data = await appointmentApi.list(query)
     list.value = data.records || []
     total.value = data.total || 0
+
+    // 拉取费用记录并按预约ID建立状态映射
+    const ids = (list.value || []).map((i) => i.id).filter(Boolean)
+    if (ids.length) {
+      const feeResp = await fetchFeeRecords({ size: 999 })
+      const feeList = feeResp.records || feeResp.data?.records || []
+      const priority = ['已退款', '退款申请中', '已支付', '未支付']
+      const map = {}
+      feeList.forEach((f) => {
+        if (!f.appointmentId || !priority.includes(f.status)) return
+        const existing = map[f.appointmentId]
+        if (!existing || priority.indexOf(f.status) < priority.indexOf(existing)) {
+          map[f.appointmentId] = f.status
+        }
+      })
+      feeStatusMap.value = map
+    } else {
+      feeStatusMap.value = {}
+    }
   } finally {
     loading.value = false
   }

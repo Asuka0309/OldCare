@@ -70,7 +70,7 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../store/auth'
-import { User, UserFilled, List, Calendar, Monitor, CreditCard, Setting, ChatDotSquare, Bell, SwitchButton, Files, HomeFilled, DataLine, Plus, Phone, TrendCharts } from '@element-plus/icons-vue'
+import { User, UserFilled, List, Calendar, Monitor, CreditCard, Setting, ChatDotSquare, Bell, SwitchButton, Files, HomeFilled, DataLine, Plus, Phone, TrendCharts, Message } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -89,7 +89,8 @@ const adminMenuItems = [
   { path: '/activities', icon: Calendar, title: '社区活动', roles: ['admin'] },
   { path: '/fees', icon: CreditCard, title: '费用记录', roles: ['admin', 'resident'] },
   { path: '/users', icon: Setting, title: '用户管理', roles: ['admin'] },
-  { path: '/evaluations', icon: ChatDotSquare, title: '评价反馈', roles: ['admin', 'resident'] },
+  { path: '/evaluations', icon: ChatDotSquare, title: '服务评价', roles: ['admin', 'resident'] },
+  { path: '/feedback', icon: Message, title: '反馈管理', roles: ['admin'] },
   { path: '/income', icon: TrendCharts, title: '收入统计', roles: ['admin', 'caregiver'] }
 ]
 
@@ -100,7 +101,8 @@ const residentMenuItems = [
   { path: '/emergency-help', icon: Phone, title: '紧急求助', roles: ['resident'] },
   { path: '/activities', icon: Calendar, title: '社区活动', roles: ['resident'] },
   { path: '/fees', icon: CreditCard, title: '费用记录', roles: ['resident'] },
-  { path: '/evaluations', icon: ChatDotSquare, title: '服务评价', roles: ['resident'] }
+  { path: '/evaluations', icon: ChatDotSquare, title: '服务评价', roles: ['resident'] },
+  { path: '/feedback', icon: Message, title: '我的反馈', roles: ['resident'] }
 ]
 
 // 已移除服务提供商相关菜单
@@ -112,7 +114,8 @@ const caregiverMenuItems = [
   { path: '/health-records', icon: Monitor, title: '健康记录', roles: ['caregiver'] },
   { path: '/activities', icon: Calendar, title: '社区活动', roles: ['caregiver'] },
   { path: '/fees', icon: CreditCard, title: '费用记录', roles: ['caregiver'] },
-  { path: '/evaluations', icon: ChatDotSquare, title: '评价反馈', roles: ['caregiver'] },
+  { path: '/evaluations', icon: ChatDotSquare, title: '服务评价', roles: ['caregiver'] },
+  { path: '/feedback', icon: Message, title: '我的反馈', roles: ['caregiver'] },
   { path: '/income', icon: TrendCharts, title: '我的收入', roles: ['caregiver'] }
 ]
 
@@ -140,7 +143,8 @@ const titleMap = {
   '/health-records': '健康记录',
   '/fees': '费用记录',
   '/users': '用户管理',
-  '/evaluations': '评价反馈',
+  '/evaluations': '服务评价',
+  '/feedback': '反馈管理',
   // 已移除报价管理
   '/health-records': '健康记录',
   '/emergency-help': '紧急求助',

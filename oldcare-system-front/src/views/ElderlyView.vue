@@ -36,7 +36,7 @@
   </div>
 
   <el-dialog v-model="dialogVisible" :title="form.id ? '编辑老人' : '新增老人'" width="520px">
-    <el-form :model="form" :rules="rules" ref="formRef" label-width="96px">
+    <el-form :model="form" :rules="rules" ref="formRef" label-width="110px">
       <el-form-item label="姓名" prop="name"><el-input v-model="form.name" /></el-form-item>
       <el-form-item label="年龄" prop="age"><el-input-number v-model="form.age" :min="0" :max="120" /></el-form-item>
       <el-form-item label="性别" prop="gender">
@@ -90,7 +90,9 @@ const form = reactive({
 const rules = {
   name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
   age: [{ required: true, message: '请输入年龄', trigger: 'blur' }],
-  gender: [{ required: true, message: '请选择性别', trigger: 'change' }]
+  gender: [{ required: true, message: '请选择性别', trigger: 'change' }],
+  idCard: [{ required: true, message: '请输入身份证号', trigger: 'blur' }],
+  phone: [{ required: true, message: '请输入电话号码', trigger: 'blur' }]
 }
 
 function resetForm(row) {

@@ -195,12 +195,12 @@ const findResidentName = (id) => {
   // 如果找不到，尝试在users中查找（新数据格式：residentId是users表的ID）
   const userItem = userOptions.value.find((i) => i.id === id)
   if (userItem) {
-    return userItem.real_name || userItem.name || '-'
+    return userItem.real_name || userItem.realName || userItem.name || userItem.username || '-'
   }
   
   // 如果还是找不到，可能是通过elderly_info的user_id关联的
   // 查找elderly_info中user_id等于该ID的记录
-  const elderlyByUserId = elderlyOptions.value.find((i) => i.user_id === id)
+  const elderlyByUserId = elderlyOptions.value.find((i) => i.user_id === id || i.userId === id)
   if (elderlyByUserId) {
     return elderlyByUserId.name
   }
