@@ -1,0 +1,30 @@
+{
+  "name": "oldcare-system-front",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
+    "axios": "^1.7.9",
+    "dayjs": "^1.11.13",
+    "echarts": "^6.0.0",
+    "element-plus": "^2.9.4",
+    "pinia": "^2.2.8",
+    "vue": "^3.5.25",
+    "vue-echarts": "^8.0.1",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.2",
+    "vite": "^7.2.4",
+    "vite-plugin-vue-devtools": "^8.0.5"
+  }
+}
